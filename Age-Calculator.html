@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age Calculator</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f9fbff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 6px 20px rgba(0, 128, 255, 0.2);
+      text-align: center;
+    }
+
+    h1 {
+      color: #007bff;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 2px solid #007bff;
+      border-radius: 12px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input[type="date"]:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #eaf4ff;
+      color: #004085;
+      font-weight: 600;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Age Calculator</h1>
+    <label for="birthdate">Enter Your Birthdate:</label>
+    <input type="date" id="birthdate" />
+    <div class="result" id="result">
+      Your age will appear here.
+    </div>
+  </div>
+
+  <script>
+    const birthdateInput = document.getElementById("birthdate");
+    const resultDiv = document.getElementById("result");
+
+    birthdateInput.addEventListener("input", () => {
+      const birthdate = new Date(birthdateInput.value);
+      if (isNaN(birthdate)) {
+        resultDiv.textContent = "Please select a valid date.";
+        return;
+      }
+
+      const today = new Date();
+      let years = today.getFullYear() - birthdate.getFullYear();
+      let months = today.getMonth() - birthdate.getMonth();
+      let days = today.getDate() - birthdate.getDate();
+
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      resultDiv.innerHTML = `
+        🎂 You are <strong>${years}</strong> years,
+        <strong>${months}</strong> months, and
+        <strong>${days}</strong> days old.
+      `;
+    });
+  </script>
+</body>
+</html>
