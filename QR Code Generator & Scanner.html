@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator & Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #6e8efb;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: #6e8efb;
+            outline: none;
+        }
+        
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #5a7df9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-scan {
+            background: #a777e3;
+        }
+        
+        .btn-scan:hover {
+            background: #9565d0;
+        }
+        
+        .result-container {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .qr-result {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        #qrcode {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #qrcode img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .scan-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #reader {
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .scan-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            width: 100%;
+            min-height: 80px;
+            word-break: break-all;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            margin-top: 15px;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .section {
+                width: 100%;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QR Code Generator & Scanner</h1>
+            <p>Create custom QR codes for URLs, text, contacts and more. Also scan QR codes using your device's camera.</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="section">
+                <h2 class="section-title">Generate QR Code</h2>
+                <div class="input-group">
+                    <label for="qr-text">Enter text or URL</label>
+                    <textarea id="qr-text" placeholder="https://example.com or any text" rows="4"></textarea>
+                </div>
+                <button id="generate-btn" class="btn">Generate QR Code</button>
+                
+                <div class="result-container">
+                    <div class="qr-result">
+                        <div id="qrcode"></div>
+                    </div>
+                    <button id="download-btn" class="btn download-btn" disabled>Download QR Code</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Scan QR Code</h2>
+                <div class="scan-container">
+                    <div id="reader"></div>
+                    <div class="scan-result" id="scan-result">Scan result will appear here...</div>
+                </div>
+                <button id="scan-btn" class="btn btn-scan">Start Scanner</button>
+                <button id="stop-scan-btn" class="btn" style="display: none; background: #dc3545; margin-top: 10px;">Stop Scanner</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 QR Code Generator & Scanner | Made with ❤️</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.4/minified/html5-qrcode.min.js"></script>
+    <script>
+        // DOM Elements
+        const qrText = document.getElementById('qr-text');
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const qrcodeDiv = document.getElementById('qrcode');
+        const scanBtn = document.getElementById('scan-btn');
+        const stopScanBtn = document.getElementById('stop-scan-btn');
+        const scanResult = document.getElementById('scan-result');
+        
+        let html5QrcodeScanner = null;
+        let generatedQRCode = null;
+        
+        // Generate QR Code
+        generateBtn.addEventListener('click', function() {
+            const text = qrText.value.trim();
+            if (!text) {
+                alert('Please enter text or URL to generate QR code');
+                return;
+            }
+            
+            // Clear previous QR code
+            qrcodeDiv.innerHTML = '';
+            
+            // Generate new QR code
+            QRCode.toDataURL(text, {
+                width: 250,
+                height: 250,
+                margin: 1,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function(err, url) {
+                if (err) {
+                    console.error(err);
+                    alert('Error generating QR code');
+                    return;
+                }
+                
+                generatedQRCode = url;
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Generated QR Code';
+                qrcodeDiv.appendChild(img);
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+            });
+        });
+        
+        // Download QR Code
+        downloadBtn.addEventListener('click', function() {
+            if (!generatedQRCode) return;
+            
+            const link = document.createElement('a');
+            link.href = generatedQRCode;
+            link.download = 'qrcode.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        
+        // Scan QR Code
+        scanBtn.addEventListener('click', function() {
+            // Initialize the scanner
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 },
+                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                },
+                /* verbose= */ false
+            );
+            
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            
+            // Toggle buttons
+            scanBtn.style.display = 'none';
+            stopScanBtn.style.display = 'block';
+        });
+        
+        // Stop scanning
+        stopScanBtn.addEventListener('click', function() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().then(() => {
+                    console.log("QR Code scanning stopped.");
+                }).catch(err => {
+                    console.error("Failed to clear scanner", err);
+                });
+            }
+            
+            // Toggle buttons
+            scanBtn.style.display = 'block';
+            stopScanBtn.style.display = 'none';
+            scanResult.textContent = "Scan result will appear here...";
+        });
+        
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle the scanned code
+            scanResult.innerHTML = `
+                <strong>Scanned Result:</strong><br>
+                ${decodedText}
+            `;
+            
+            // Optional: Stop scanning after success
+            // html5QrcodeScanner.clear();
+            // scanBtn.style.display = 'block';
+            // stopScanBtn.style.display = 'none';
+        }
+        
+        function onScanFailure(error) {
+            // Handle scan failure, usually better to ignore as it can be frequent
+            // console.warn(`QR Code scan error: ${error}`);
+        }
+        
+        // Sample QR code on page load
+        window.addEventListener('load', function() {
+            qrText.value = 'https://github.com/';
+            generateBtn.click();
+        });
+    </script>
+</body>
+</html>
