@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocConvert - Document Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .converter-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .upload-area {
+            border: 3px dashed #6a11cb;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .upload-area:hover {
+            background: #e9ecef;
+            border-color: #2575fc;
+        }
+        
+        .upload-area i {
+            font-size: 60px;
+            color: #6a11cb;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .upload-area p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        .browse-btn {
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .browse-btn:hover {
+            background: #2575fc;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .conversion-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .option-card {
+            flex: 1;
+            min-width: 200px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #6a11cb;
+        }
+        
+        .option-card.selected {
+            border-color: #2575fc;
+            background: #e8f4ff;
+        }
+        
+        .option-card i {
+            font-size: 40px;
+            color: #6a11cb;
+            margin-bottom: 15px;
+        }
+        
+        .option-card h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .option-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .convert-btn {
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .convert-btn:hover {
+            background: #2575fc;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 50px 0;
+            justify-content: center;
+        }
+        
+        .feature-card {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card i {
+            font-size: 50px;
+            color: #6a11cb;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            margin-top: auto;
+        }
+        
+        footer p {
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .conversion-options {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DocConvert</h1>
+            <p>Convert your documents to any format with ease - free, fast and secure</p>
+        </header>
+        
+        <div class="converter-card">
+            <div class="upload-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Upload Your Document</h3>
+                <p>Supported formats: PDF, DOCX, PPTX, XLSX, TXT and more</p>
+                <button class="browse-btn">Browse Files</button>
+            </div>
+            
+            <div class="conversion-options">
+                <div class="option-card selected">
+                    <i class="fas fa-file-pdf"></i>
+                    <h4>PDF</h4>
+                    <p>Convert to PDF format</p>
+                </div>
+                
+                <div class="option-card">
+                    <i class="fas fa-file-word"></i>
+                    <h4>DOCX</h4>
+                    <p>Convert to Word document</p>
+                </div>
+                
+                <div class="option-card">
+                    <i class="fas fa-file-excel"></i>
+                    <h4>XLSX</h4>
+                    <p>Convert to Excel spreadsheet</p>
+                </div>
+                
+                <div class="option-card">
+                    <i class="fas fa-file-powerpoint"></i>
+                    <h4>PPTX</h4>
+                    <p>Convert to PowerPoint presentation</p>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="convert-btn">
+                    <i class="fas fa-sync-alt"></i> Convert Now
+                </button>
+                
+                <button class="download-btn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h3>Secure Conversion</h3>
+                <p>Your files are encrypted and automatically deleted from our servers after 2 hours.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast Processing</h3>
+                <p>Advanced algorithms ensure your documents are converted in seconds.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-infinity"></i>
+                <h3>Unlimited Conversions</h3>
+                <p>Convert as many files as you need, no limits, completely free.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 DocConvert. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Simple interaction for the conversion options
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove selected class from all options
+                document.querySelectorAll('.option-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                card.classList.add('selected');
+            });
+        });
+        
+        // Simulate conversion process
+        document.querySelector('.convert-btn').addEventListener('click', () => {
+            const convertBtn = document.querySelector('.convert-btn');
+            const originalText = convertBtn.innerHTML;
+            
+            // Show loading state
+            convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+            convertBtn.disabled = true;
+            
+            // Simulate conversion process
+            setTimeout(() => {
+                convertBtn.innerHTML = '<i class="fas fa-check"></i> Conversion Complete!';
+                convertBtn.style.background = '#28a745';
+                
+                // Enable download button
+                document.querySelector('.download-btn').disabled = false;
+                
+                // Reset after some time
+                setTimeout(() => {
+                    convertBtn.innerHTML = originalText;
+                    convertBtn.disabled = false;
+                    convertBtn.style.background = '#6a11cb';
+                }, 3000);
+            }, 2000);
+        });
+        
+        // Initially disable download button
+        document.querySelector('.download-btn').disabled = true;
+    </script>
+</body>
+</html>
