@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            padding: 20px;
+        }
+        
+        .calculator {
+            width: 350px;
+            background-color: #22252d;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        .display {
+            background-color: #22252d;
+            color: white;
+            padding: 30px 20px;
+            text-align: right;
+            height: 120px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .calculation {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 10px;
+            min-height: 24px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .result {
+            font-size: 2.2rem;
+            font-weight: 500;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background-color: #292d36;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        button {
+            border: none;
+            outline: none;
+            padding: 16px 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .number, .decimal {
+            background-color: #2a2d37;
+            color: white;
+        }
+        
+        .operator {
+            background-color: #2a2d37;
+            color: #f9a826;
+        }
+        
+        .scientific {
+            background-color: #2a2d37;
+            color: #26c6da;
+        }
+        
+        .equals {
+            background-color: #f9a826;
+            color: white;
+        }
+        
+        .clear, .delete {
+            background-color: #ff7979;
+            color: white;
+        }
+        
+        .memory {
+            background-color: #2a2d37;
+            color: #ab47bc;
+        }
+        
+        .toggle {
+            background-color: #2a2d37;
+            color: #66bb6a;
+            grid-column: span 2;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 15px;
+            font-size: 0.8rem;
+            background-color: #22252d;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 400px) {
+            .calculator {
+                width: 100%;
+            }
+            
+            button {
+                padding: 14px 8px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display">
+            <div class="calculation"></div>
+            <div class="result">0</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="scientific" onclick="calculateFunction('sin')">sin</button>
+            <button class="scientific" onclick="calculateFunction('cos')">cos</button>
+            <button class="scientific" onclick="calculateFunction('tan')">tan</button>
+            <button class="clear" onclick="clearAll()">C</button>
+            
+            <button class="scientific" onclick="calculateFunction('asin')">sin<sup>-1</sup></button>
+            <button class="scientific" onclick="calculateFunction('acos')">cos<sup>-1</sup></button>
+            <button class="scientific" onclick="calculateFunction('atan')">tan<sup>-1</sup></button>
+            <button class="delete" onclick="backspace()">⌫</button>
+            
+            <button class="scientific" onclick="calculateFunction('log')">log</button>
+            <button class="scientific" onclick="calculateFunction('ln')">ln</button>
+            <button class="scientific" onclick="calculatePower()">x<sup>y</sup></button>
+            <button class="operator" onclick="appendOperator('/')">/</button>
+            
+            <button class="memory" onclick="memoryStore()">MS</button>
+            <button class="memory" onclick="memoryRecall()">MR</button>
+            <button class="memory" onclick="memoryClear()">MC</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+            
+            <button class="number" onclick="appendNumber(7)">7</button>
+            <button class="number" onclick="appendNumber(8)">8</button>
+            <button class="number" onclick="appendNumber(9)">9</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+            
+            <button class="number" onclick="appendNumber(4)">4</button>
+            <button class="number" onclick="appendNumber(5)">5</button>
+            <button class="number" onclick="appendNumber(6)">6</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+            
+            <button class="number" onclick="appendNumber(1)">1</button>
+            <button class="number" onclick="appendNumber(2)">2</button>
+            <button class="number" onclick="appendNumber(3)">3</button>
+            <button class="equals" onclick="calculate()" rowspan="2">=</button>
+            
+            <button class="toggle" onclick="toggleSign()">±</button>
+            <button class="number" onclick="appendNumber(0)">0</button>
+            <button class="decimal" onclick="appendDecimal()">.</button>
+        </div>
+        
+        <div class="footer">
+            Scientific Calculator | Created with JavaScript
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '0';
+        let calculation = '';
+        let result = 0;
+        let memory = 0;
+        let lastOperation = null;
+        let resetInput = false;
+        
+        const calculationElement = document.querySelector('.calculation');
+        const resultElement = document.querySelector('.result');
+        
+        function updateDisplay() {
+            resultElement.textContent = currentInput;
+            calculationElement.textContent = calculation;
+        }
+        
+        function appendNumber(number) {
+            if (resetInput) {
+                currentInput = '';
+                resetInput = false;
+            }
+            
+            if (currentInput === '0' && number !== '.') {
+                currentInput = number.toString();
+            } else if (currentInput.length < 12) {
+                currentInput += number.toString();
+            }
+            
+            updateDisplay();
+        }
+        
+        function appendDecimal() {
+            if (resetInput) {
+                currentInput = '0.';
+                resetInput = false;
+            } else if (!currentInput.includes('.')) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+        
+        function appendOperator(op) {
+            const inputValue = parseFloat(currentInput);
+            
+            if (calculation === '' && !isNaN(inputValue)) {
+                result = inputValue;
+            } else if (lastOperation && !resetInput) {
+                calculate();
+            }
+            
+            calculation = `${result} ${op} `;
+            lastOperation = op;
+            resetInput = true;
+            updateDisplay();
+        }
+        
+        function calculate() {
+            const inputValue = parseFloat(currentInput);
+            
+            if (lastOperation === '+') {
+                result += inputValue;
+            } else if (lastOperation === '-') {
+                result -= inputValue;
+            } else if (lastOperation === '*') {
+                result *= inputValue;
+            } else if (lastOperation === '/') {
+                if (inputValue === 0) {
+                    currentInput = 'Error';
+                    calculation = '';
+                    lastOperation = null;
+                    updateDisplay();
+                    return;
+                }
+                result /= inputValue;
+            }
+            
+            // Format the result to avoid too many decimal places
+            if (Number.isInteger(result)) {
+                currentInput = result.toString();
+            } else {
+                currentInput = result.toFixed(6).replace(/\.?0+$/, '');
+            }
+            
+            calculation = '';
+            lastOperation = null;
+            resetInput = true;
+            updateDisplay();
+        }
+        
+        function calculateFunction(func) {
+            const inputValue = parseFloat(currentInput);
+            let calculatedValue;
+            
+            switch (func) {
+                case 'sin':
+                    calculatedValue = Math.sin(inputValue * Math.PI / 180);
+                    calculation = `sin(${inputValue})`;
+                    break;
+                case 'cos':
+                    calculatedValue = Math.cos(inputValue * Math.PI / 180);
+                    calculation = `cos(${inputValue})`;
+                    break;
+                case 'tan':
+                    calculatedValue = Math.tan(inputValue * Math.PI / 180);
+                    calculation = `tan(${inputValue})`;
+                    break;
+                case 'asin':
+                    calculatedValue = Math.asin(inputValue) * 180 / Math.PI;
+                    calculation = `asin(${inputValue})`;
+                    break;
+                case 'acos':
+                    calculatedValue = Math.acos(inputValue) * 180 / Math.PI;
+                    calculation = `acos(${inputValue})`;
+                    break;
+                case 'atan':
+                    calculatedValue = Math.atan(inputValue) * 180 / Math.PI;
+                    calculation = `atan(${inputValue})`;
+                    break;
+                case 'log':
+                    calculatedValue = Math.log10(inputValue);
+                    calculation = `log(${inputValue})`;
+                    break;
+                case 'ln':
+                    calculatedValue = Math.log(inputValue);
+                    calculation = `ln(${inputValue})`;
+                    break;
+            }
+            
+            if (Number.isInteger(calculatedValue)) {
+                currentInput = calculatedValue.toString();
+            } else {
+                currentInput = calculatedValue.toFixed(6).replace(/\.?0+$/, '');
+            }
+            
+            resetInput = true;
+            updateDisplay();
+        }
+        
+        function calculatePower() {
+            calculation = `${currentInput}^`;
+            resetInput = true;
+            updateDisplay();
+            
+            // In a real implementation, we would need to get the second number
+            setTimeout(() => {
+                const exponent = prompt("Enter exponent:");
+                if (exponent !== null) {
+                    const base = parseFloat(currentInput);
+                    const exp = parseFloat(exponent);
+                    const calculatedValue = Math.pow(base, exp);
+                    
+                    if (Number.isInteger(calculatedValue)) {
+                        currentInput = calculatedValue.toString();
+                    } else {
+                        currentInput = calculatedValue.toFixed(6).replace(/\.?0+$/, '');
+                    }
+                    
+                    calculation += exponent;
+                    resetInput = true;
+                    updateDisplay();
+                }
+            }, 100);
+        }
+        
+        function clearAll() {
+            currentInput = '0';
+            calculation = '';
+            result = 0;
+            lastOperation = null;
+            resetInput = false;
+            updateDisplay();
+        }
+        
+        function backspace() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+        
+        function toggleSign() {
+            currentInput = (parseFloat(currentInput) * -1).toString();
+            updateDisplay();
+        }
+        
+        function memoryStore() {
+            memory = parseFloat(currentInput);
+        }
+        
+        function memoryRecall() {
+            currentInput = memory.toString();
+            updateDisplay();
+        }
+        
+        function memoryClear() {
+            memory = 0;
+        }
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
