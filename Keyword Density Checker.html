@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Density Checker</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            background: #4a00e0;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4a00e0;
+            box-shadow: 0 0 0 2px rgba(74, 0, 224, 0.2);
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #4a00e0;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #3a00c0;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results-section {
+            padding: 25px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4a00e0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .keyword {
+            font-weight: 600;
+        }
+        
+        .frequency {
+            text-align: center;
+        }
+        
+        .percentage {
+            text-align: right;
+            font-weight: 600;
+            color: #4a00e0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #4a00e0;
+            border-radius: 4px;
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            height: 300px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Keyword Density Checker</h1>
+            <p class="description">Analyze your content for keyword frequency and density to optimize for SEO</p>
+        </header>
+        
+        <section class="input-section">
+            <textarea id="textInput" placeholder="Paste your text here...">Keyword density is an important aspect of SEO. It refers to the number of times a keyword appears on a page compared to the total number of words on the page. Keyword density can be expressed as a percentage. For example, if a keyword appears 10 times in a 1000-word article, the keyword density would be 1%. While keyword density is not as important as it once was, it's still a useful metric to consider when optimizing your content for search engines. Most SEO experts agree that an ideal keyword density is around 1-2%. This means that for every 100 words of content, your keyword should appear about 1-2 times.</textarea>
+            
+            <div class="options">
+                <div class="option-group">
+                    <label for="filterOption">Filter Common Words:</label>
+                    <select id="filterOption">
+                        <option value="all">Include All Words</option>
+                        <option value="filter" selected>Filter Common Words (a, the, and, etc.)</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="minLength">Minimum Word Length:</label>
+                    <input type="number" id="minLength" value="3" min="1" max="10">
+                </div>
+                
+                <div class="option-group">
+                    <label for="minFrequency">Minimum Frequency:</label>
+                    <input type="number" id="minFrequency" value="2" min="1" max="10">
+                </div>
+            </div>
+            
+            <button id="analyzeBtn">Analyze Keyword Density</button>
+        </section>
+        
+        <section class="results-section">
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-title">Total Words</div>
+                    <div class="result-value" id="totalWords">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">Unique Words</div>
+                    <div class="result-value" id="uniqueWords">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">Keyword Density</div>
+                    <div class="result-value" id="keywordDensity">0%</div>
+                </div>
+            </div>
+            
+            <h2>Keyword Frequency</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Keyword</th>
+                        <th class="frequency">Frequency</th>
+                        <th class="percentage">Density</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+    
+    <footer>
+        <p>Keyword Density Checker Tool &copy; 2023 | For SEO Optimization</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const textInput = document.getElementById('textInput');
+            const resultsTable = document.getElementById('resultsTable');
+            const totalWordsEl = document.getElementById('totalWords');
+            const uniqueWordsEl = document.getElementById('uniqueWords');
+            const keywordDensityEl = document.getElementById('keywordDensity');
+            
+            // Common words to filter out
+            const commonWords = new Set(['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'this', 'that', 'these', 'those', 'it', 'its', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'can', 'may', 'might', 'i', 'you', 'he', 'she', 'we', 'they', 'my', 'your', 'his', 'her', 'our', 'their', 'as', 'from', 'so', 'not', 'if', 'then', 'else', 'when', 'while', 'where', 'how', 'what', 'which', 'who', 'whom', 'there', 'here']);
+            
+            analyzeBtn.addEventListener('click', analyzeText);
+            
+            // Auto-analyze on page load
+            analyzeText();
+            
+            function analyzeText() {
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('Please enter some text to analyze.');
+                    return;
+                }
+                
+                const filterOption = document.getElementById('filterOption').value;
+                const minLength = parseInt(document.getElementById('minLength').value);
+                const minFrequency = parseInt(document.getElementById('minFrequency').value);
+                
+                // Clean and split text into words
+                const words = text.toLowerCase()
+                    .replace(/[^\w\s]|_/g, ' ') // Remove punctuation
+                    .replace(/\s+/g, ' ')        // Collapse multiple spaces
+                    .split(' ')                  // Split into words
+                    .filter(word => word.length >= minLength);
+                
+                const totalWords = words.length;
+                totalWordsEl.textContent = totalWords.toLocaleString();
+                
+                // Count word frequencies
+                const wordCount = {};
+                words.forEach(word => {
+                    if (filterOption === 'filter' && commonWords.has(word)) return;
+                    wordCount[word] = (wordCount[word] || 0) + 1;
+                });
+                
+                // Convert to array and filter by minimum frequency
+                const wordCountArr = Object.entries(wordCount)
+                    .filter(([word, count]) => count >= minFrequency)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                uniqueWordsEl.textContent = wordCountArr.length.toLocaleString();
+                
+                // Calculate keyword density for the most frequent word
+                const topKeywordCount = wordCountArr.length > 0 ? wordCountArr[0][1] : 0;
+                const density = totalWords > 0 ? ((topKeywordCount / totalWords) * 100).toFixed(2) : 0;
+                keywordDensityEl.textContent = `${density}%`;
+                
+                // Populate results table
+                const tbody = resultsTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                wordCountArr.forEach(([word, count]) => {
+                    const percentage = ((count / totalWords) * 100).toFixed(2);
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td class="keyword">${word}</td>
+                        <td class="frequency">${count}</td>
+                        <td class="percentage">${percentage}%</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                if (wordCountArr.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3" style="text-align: center;">No keywords match the current filters.</td>`;
+                    tbody.appendChild(row);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
