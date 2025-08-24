@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Duplicate Lines</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        
+        header {
+            background: #4e54c8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .app-content {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .app-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #4e54c8;
+            font-size: 1.5rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        textarea:focus {
+            border-color: #4e54c8;
+            outline: none;
+        }
+        
+        .buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: #4e54c8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: #3a3eb3;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #clearBtn {
+            background: #ff6b6b;
+        }
+        
+        #clearBtn:hover {
+            background: #ee5253;
+        }
+        
+        .output-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .output-info span {
+            font-weight: 600;
+            color: #4e54c8;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+        }
+        
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Remove Duplicate Lines</h1>
+            <p class="description">Paste your text below to remove duplicate lines and clean up your content</p>
+        </header>
+        
+        <div class="app-content">
+            <div class="input-section">
+                <h2>Input Text</h2>
+                <textarea id="inputText" placeholder="Paste your text with duplicate lines here..."></textarea>
+                <div class="buttons">
+                    <button id="processBtn">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                        Process Text
+                    </button>
+                    <button id="clearBtn">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2>Unique Lines</h2>
+                <textarea id="outputText" readonly placeholder="Your unique lines will appear here..."></textarea>
+                <div class="output-info">
+                    <p>Original lines: <span id="originalLines">0</span></p>
+                    <p>Unique lines: <span id="uniqueLines">0</span></p>
+                    <p>Duplicates removed: <span id="duplicatesRemoved">0</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 Remove Duplicate Lines Tool | Designed for simplicity and efficiency</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const processBtn = document.getElementById('processBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const originalLinesSpan = document.getElementById('originalLines');
+            const uniqueLinesSpan = document.getElementById('uniqueLines');
+            const duplicatesRemovedSpan = document.getElementById('duplicatesRemoved');
+            
+            processBtn.addEventListener('click', function() {
+                const input = inputText.value;
+                if (!input.trim()) {
+                    alert('Please enter some text first!');
+                    return;
+                }
+                
+                const lines = input.split('\n');
+                const uniqueLines = [...new Set(lines)];
+                
+                outputText.value = uniqueLines.join('\n');
+                
+                // Update statistics
+                const originalCount = lines.length;
+                const uniqueCount = uniqueLines.length;
+                const duplicatesRemoved = originalCount - uniqueCount;
+                
+                originalLinesSpan.textContent = originalCount;
+                uniqueLinesSpan.textContent = uniqueCount;
+                duplicatesRemovedSpan.textContent = duplicatesRemoved;
+            });
+            
+            clearBtn.addEventListener('click', function() {
+                inputText.value = '';
+                outputText.value = '';
+                originalLinesSpan.textContent = '0';
+                uniqueLinesSpan.textContent = '0';
+                duplicatesRemovedSpan.textContent = '0';
+            });
+        });
+    </script>
+</body>
+</html>
