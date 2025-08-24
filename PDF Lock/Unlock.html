@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePDF - Lock & Unlock Your PDF Files</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        
+        header {
+            background: #4e54c8;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #777;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #4e54c8;
+            border-bottom: 3px solid #4e54c8;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .upload-area {
+            border: 2px dashed #4e54c8;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            background: #f8f9ff;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #eef0ff;
+        }
+        
+        .upload-icon {
+            font-size: 50px;
+            color: #4e54c8;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .btn {
+            background: #4e54c8;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background: #3a3eb3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="password"]:focus {
+            border-color: #4e54c8;
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+            outline: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .download-btn {
+            background: #28a745;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
+        
+        .reset-btn {
+            background: #dc3545;
+        }
+        
+        .reset-btn:hover {
+            background: #c82333;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .file-info {
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: white;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SecurePDF</h1>
+            <p class="description">Protect your PDF files with password encryption</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="lock">Lock PDF</div>
+                <div class="tab" data-tab="unlock">Unlock PDF</div>
+            </div>
+            
+            <div class="tab-content active" id="lock-tab">
+                <div class="upload-area" id="lock-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <p class="upload-text">Drag & drop your PDF here or click to browse</p>
+                    <button class="btn"><i class="fas fa-upload"></i> Select PDF File</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lock-password">Set Password</label>
+                    <input type="password" id="lock-password" placeholder="Enter a strong password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Re-enter your password">
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" id="lock-btn"><i class="fas fa-lock"></i> Lock PDF</button>
+                    <button class="btn reset-btn"><i class="fas fa-redo"></i> Reset</button>
+                </div>
+                
+                <div class="status" id="lock-status"></div>
+            </div>
+            
+            <div class="tab-content" id="unlock-tab">
+                <div class="upload-area" id="unlock-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <p class="upload-text">Drag & drop your locked PDF here or click to browse</p>
+                    <button class="btn"><i class="fas fa-upload"></i> Select Protected PDF</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="unlock-password">Enter Password</label>
+                    <input type="password" id="unlock-password" placeholder="Enter the PDF password">
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" id="unlock-btn"><i class="fas fa-unlock"></i> Unlock PDF</button>
+                    <button class="btn reset-btn"><i class="fas fa-redo"></i> Reset</button>
+                </div>
+                
+                <div class="status" id="unlock-status"></div>
+            </div>
+            
+            <div class="file-info">
+                <p id="file-name"></p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 SecurePDF | Your files are processed locally in your browser</p>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+        
+        // Simulate file upload
+        document.querySelectorAll('.upload-area').forEach(area => {
+            area.addEventListener('click', () => {
+                // In a real application, this would trigger a file input
+                document.getElementById('file-name').textContent = "example_document.pdf (2.4 MB)";
+                
+                // Show success status
+                const statusId = area.id === 'lock-upload' ? 'lock-status' : 'unlock-status';
+                const status = document.getElementById(statusId);
+                status.textContent = "File selected successfully!";
+                status.classList.remove('error');
+                status.classList.add('success');
+            });
+        });
+        
+        // Lock PDF button
+        document.getElementById('lock-btn').addEventListener('click', () => {
+            const password = document.getElementById('lock-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const status = document.getElementById('lock-status');
+            
+            if (!password || !confirmPassword) {
+                status.textContent = "Please enter and confirm your password!";
+                status.classList.remove('success');
+                status.classList.add('error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                status.textContent = "Passwords do not match!";
+                status.classList.remove('success');
+                status.classList.add('error');
+                return;
+            }
+            
+            status.textContent = "PDF locked successfully! Download your protected file.";
+            status.classList.remove('error');
+            status.classList.add('success');
+            
+            // In a real application, this would enable the download button
+            // For demonstration, we'll just show the message
+        });
+        
+        // Unlock PDF button
+        document.getElementById('unlock-btn').addEventListener('click', () => {
+            const password = document.getElementById('unlock-password').value;
+            const status = document.getElementById('unlock-status');
+            
+            if (!password) {
+                status.textContent = "Please enter the password!";
+                status.classList.remove('success');
+                status.classList.add('error');
+                return;
+            }
+            
+            // Simulate successful unlock
+            status.textContent = "PDF unlocked successfully! Download your file.";
+            status.classList.remove('error');
+            status.classList.add('success');
+            
+            // In a real application, this would enable the download button
+        });
+        
+        // Reset buttons
+        document.querySelectorAll('.reset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Clear all inputs and status messages
+                document.querySelectorAll('input[type="password"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('.status').forEach(status => {
+                    status.textContent = '';
+                    status.classList.remove('success', 'error');
+                });
+                
+                document.getElementById('file-name').textContent = '';
+            });
+        });
+    </script>
+</body>
+</html>
