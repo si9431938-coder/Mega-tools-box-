@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Case Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 25px;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4b6cb7;
+            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+        }
+        
+        .options-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .option.active {
+            background-color: #4b6cb7;
+            color: white;
+            border-color: #4b6cb7;
+        }
+        
+        .option input {
+            margin-right: 10px;
+        }
+        
+        .buttons-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        #convert-btn {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+        }
+        
+        #convert-btn:hover {
+            background: linear-gradient(to right, #182848, #4b6cb7);
+            transform: translateY(-2px);
+        }
+        
+        #clear-btn {
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #ddd;
+        }
+        
+        #clear-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .output-section {
+            margin-bottom: 20px;
+        }
+        
+        .output-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        #output-text {
+            min-height: 150px;
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 16px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .statistics {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #eee;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4b6cb7;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 600px) {
+            .options-section {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Text Case Converter</h1>
+            <p class="description">Easily convert text between different cases with just a few clicks</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h3>Enter your text:</h3>
+                <textarea id="input-text" placeholder="Type or paste your text here..."></textarea>
+            </div>
+            
+            <div class="options-section">
+                <label class="option active">
+                    <input type="radio" name="case-option" value="sentence" checked>
+                    Sentence case
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="lower">
+                    lower case
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="upper">
+                    UPPER CASE
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="title">
+                    Title Case
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="camel">
+                    camelCase
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="pascal">
+                    PascalCase
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="snake">
+                    snake_case
+                </label>
+                <label class="option">
+                    <input type="radio" name="case-option" value="kebab">
+                    kebab-case
+                </label>
+            </div>
+            
+            <div class="buttons-section">
+                <button id="convert-btn">Convert Text</button>
+                <button id="clear-btn">Clear All</button>
+            </div>
+            
+            <div class="output-section">
+                <h3>Converted text:</h3>
+                <div id="output-text"></div>
+            </div>
+            
+            <div class="statistics">
+                <div class="stat-box">
+                    <div class="stat-value" id="char-count">0</div>
+                    <div class="stat-label">Characters</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="word-count">0</div>
+                    <div class="stat-label">Words</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="line-count">0</div>
+                    <div class="stat-label">Lines</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Text Case Converter &copy; 2023 | All rights reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('input-text');
+            const outputText = document.getElementById('output-text');
+            const convertBtn = document.getElementById('convert-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const caseOptions = document.querySelectorAll('input[name="case-option"]');
+            const charCount = document.getElementById('char-count');
+            const wordCount = document.getElementById('word-count');
+            const lineCount = document.getElementById('line-count');
+            
+            const optionLabels = document.querySelectorAll('.option');
+            
+            // Add active class to selected option
+            optionLabels.forEach(label => {
+                label.addEventListener('click', () => {
+                    optionLabels.forEach(l => l.classList.remove('active'));
+                    label.classList.add('active');
+                    label.querySelector('input').checked = true;
+                });
+            });
+            
+            // Update statistics
+            function updateStats(text) {
+                charCount.textContent = text.length;
+                wordCount.textContent = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+                lineCount.textContent = text === '' ? 0 : text.split('\n').length;
+            }
+            
+            // Convert text based on selected option
+            function convertText() {
+                const text = inputText.value;
+                const selectedOption = document.querySelector('input[name="case-option"]:checked').value;
+                
+                let convertedText = '';
+                
+                switch(selectedOption) {
+                    case 'sentence':
+                        convertedText = text.toLowerCase().replace(/(^\s*|[.!?]\s+)(\w)/g, (match) => match.toUpperCase());
+                        break;
+                    case 'lower':
+                        convertedText = text.toLowerCase();
+                        break;
+                    case 'upper':
+                        convertedText = text.toUpperCase();
+                        break;
+                    case 'title':
+                        convertedText = text.toLowerCase().replace(/\b\w/g, (match) => match.toUpperCase());
+                        break;
+                    case 'camel':
+                        convertedText = text.toLowerCase()
+                            .replace(/[^a-zA-Z0-9]+(.)/g, (match, chr) => chr.toUpperCase())
+                            .replace(/\s+/g, '');
+                        break;
+                    case 'pascal':
+                        convertedText = text.toLowerCase()
+                            .replace(/(^\w|[\s-]+\w)/g, (match) => match.toUpperCase().replace(/[\s-]/g, ''));
+                        break;
+                    case 'snake':
+                        convertedText = text.trim().replace(/\s+/g, '_').toLowerCase();
+                        break;
+                    case 'kebab':
+                        convertedText = text.trim().replace(/\s+/g, '-').toLowerCase();
+                        break;
+                    default:
+                        convertedText = text;
+                }
+                
+                outputText.textContent = convertedText;
+                updateStats(text);
+            }
+            
+            // Clear all text
+            function clearAll() {
+                inputText.value = '';
+                outputText.textContent = '';
+                updateStats('');
+            }
+            
+            // Event listeners
+            convertBtn.addEventListener('click', convertText);
+            clearBtn.addEventListener('click', clearAll);
+            
+            inputText.addEventListener('input', function() {
+                updateStats(this.value);
+            });
+            
+            // Initialize statistics
+            updateStats('');
+        });
+    </script>
+</body>
+</html>
